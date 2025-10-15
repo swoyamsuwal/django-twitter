@@ -39,13 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myproject',
-    'rest_framework',
-    'corsheaders',
+    'rest_framework', #api
+    'corsheaders', # access point for other projects
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -56,8 +56,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'admin.urls'
 
-CORS_URLS_REGEX = r"^/myproject/.*$"
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_URLS_REGEX = r"^/myproject/.*$"
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
 TEMPLATES = [
     {

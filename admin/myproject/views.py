@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib.auth import login,authenticate
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework import status
+from django.views.decorators.csrf import ensure_csrf_cookie
+
 
 from .models import Tweet
 from .forms import UserRegisterForm
@@ -92,7 +95,43 @@ def search_api(request):
     serializer = TweetSerializer(tweets, many=True)
     return Response(serializer.data)
 
+# -----------------------------
+# Login
+# -----------------------------
 
+@ensure_csrf_cookie
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_api(request):
+    """
+    API endpoint for user login.
+    Expects JSON: { "username": "<username>", "password": "<password>" }
+    Returns success message or error.
+    """
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    if not username or not password:
+        return Response({"error": "Username and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = authenticate(request, username=username, password=password)
+
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            # Return user info if needed
+            return Response({
+                "message": "Login successful",
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                }
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "User account is inactive."}, status=status.HTTP_403_FORBIDDEN)
+
+    return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 # ================================
 # ❌ Normal Django Views (Commented)
 # ================================
