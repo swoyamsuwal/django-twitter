@@ -32,12 +32,18 @@ def tweet_api_detail(request, tweet_id):
 
 @api_view(['POST'])
 def tweet_api_create(request):
-    """Create a new tweet"""
+    """Create a new tweet and assign the logged-in user automatically"""
+    if not request.user.is_authenticated:
+        return Response({"error": "Authentication required."}, status=status.HTTP_401_UNAUTHORIZED)
+
     serializer = TweetSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        # Assign the logged-in user automatically
+        serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(['PUT'])
