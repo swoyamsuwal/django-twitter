@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': 'django',           # your database name
         'USER': 'postgres',         # default user for PostgreSQL
         'PASSWORD': '12345678',     # your password
-        'HOST': 'localhost',        # or '127.0.0.1'
+        'HOST': 'host.docker.internal',        # or '127.0.0.1'
         'PORT': '5432',             # default PostgreSQL port
     }
 }
